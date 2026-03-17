@@ -156,12 +156,12 @@ const ROUTES=[
 ROUTES.forEach((r,i)=>{if(!r.id)r.id=`r${i}`;});
 
 const COLOR_STYLE={
-  red:{fill:'#E24B4A',text:'#fff'},blue:{fill:'#378ADD',text:'#fff'},
-  green:{fill:'#639922',text:'#fff'},yellow:{fill:'#BA7517',text:'#fff'},
-  orange:{fill:'#D85A30',text:'#fff'},pink:{fill:'#D4537E',text:'#fff'},
-  black:{fill:'#2C2C2A',text:'#fff'},white:{fill:'#F5F4F2',text:'#333'},
-  gray:{fill:'#888780',text:'#fff'},purple:{fill:'#7F77DD',text:'#fff'},
-  any:{fill:'#B4B2A9',text:'#fff'},
+  red:{fill:'#EE1111',text:'#fff'},blue:{fill:'#1166EE',text:'#fff'},
+  green:{fill:'#22AA22',text:'#fff'},yellow:{fill:'#FFCC00',text:'#333'},
+  orange:{fill:'#FF7700',text:'#fff'},pink:{fill:'#EE2288',text:'#fff'},
+  black:{fill:'#111111',text:'#fff'},white:{fill:'#F0EDE0',text:'#333'},
+  gray:{fill:'#888780',text:'#fff'},purple:{fill:'#8855EE',text:'#fff'},
+  any:{fill:'#AAAAAA',text:'#fff'},
 };
 
 let state={destinations:new Set(),myRoutes:new Set(),oppRoutes:new Set()};
@@ -209,8 +209,8 @@ function drawMap(){
     track.setAttribute('x1',ax);track.setAttribute('y1',ay);
     track.setAttribute('x2',bx);track.setAttribute('y2',by);
     track.setAttribute('stroke',isOpp?'#E24B4A':isMine?'#2a7a2a':cs.fill);
-    track.setAttribute('stroke-width',isMine||isOpp?'6':'4');
-    track.setAttribute('stroke-opacity',isOpp?'0.9':isMine?'0.95':'0.65');
+    track.setAttribute('stroke-width',isMine||isOpp?'7':'5');
+    track.setAttribute('stroke-opacity',isOpp?'1':isMine?'1':'0.9');
     track.setAttribute('stroke-linecap','round');
     if(!isMine&&!isOpp)track.setAttribute('stroke-dasharray','8 4');
     svg.appendChild(track);
