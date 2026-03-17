@@ -253,6 +253,7 @@ function drawMap(){
     // Mobile long-press
     let pressTimer=null;
     hit.addEventListener('touchstart',e=>{
+      e.preventDefault();
       pressTimer=setTimeout(()=>{
         pressTimer=null;
         toggleRoute(r.id,true);
