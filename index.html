@@ -248,50 +248,26 @@ function drawMap(){
     hit.setAttribute('cursor', 'pointer');
     hit.classList.add('route-hit');
 
-    let pressTimer = null;
-    let didLongPress = false;
-    let isTouchDevice = false;
+   let pressStart = 0;
 
     hit.addEventListener('touchstart', e => {
-      isTouchDevice = true;
-      didLongPress = false;
-      pressTimer = setTimeout(() => {
-        didLongPress = true;
-        pressTimer = null;
-        toggleRoute(r.id, true);    // long-press = opponent
-      }, 500);
+      pressStart = Date.now();
     }, {passive: true});
 
     hit.addEventListener('touchend', e => {
-      if (pressTimer) {             // timer still alive = it was a short tap
-        clearTimeout(pressTimer);
-        pressTimer = null;
-        if (!didLongPress) {
-          toggleRoute(r.id, false); // short tap = my route / unmark
-        }
-      }
-    }, {passive: true});
-
-    hit.addEventListener('touchmove', e => {
-      if (pressTimer) {             // finger moved = cancel, treat as scroll
-        clearTimeout(pressTimer);
-        pressTimer = null;
-        didLongPress = false;
-      }
-    }, {passive: true});
+      e.preventDefault();
+      const dur = Date.now() - pressStart;
+      if (dur < 500) cycleRoute(r.id);
+    });
 
     hit.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
-      if (isTouchDevice) return;    // touch already handled it, ignore ghost click
-      toggleRoute(r.id, false);     // desktop mouse click = my route / unmark
+      if (Date.now() - pressStart > 100) return; // was a touch, skip ghost click
+      cycleRoute(r.id);
     });
 
-    hit.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleRoute(r.id, true);      // desktop right-click = opponent
-    });
+    hit.addEventListener('contextmenu', e => { e.preventDefault(); });
 
     svg.appendChild(hit);  // ← this line was missing
   });                       // ← this closes ROUTES.forEach
@@ -434,6 +410,20 @@ function toggleRoute(id,isOpp){
   }else{
     if(state.myRoutes.has(id)){state.myRoutes.delete(id);showToast('Route cleared');}
     else{state.myRoutes.add(id);state.oppRoutes.delete(id);showToast('Your route marked');}
+  }
+  drawMap();
+}
+  function cycleRoute(id) {
+  if (state.myRoutes.has(id)) {
+    state.myRoutes.delete(id);
+    state.oppRoutes.add(id);
+    showToast('Opponent route');
+  } else if (state.oppRoutes.has(id)) {
+    state.oppRoutes.delete(id);
+    showToast('Route cleared');
+  } else {
+    state.myRoutes.add(id);
+    showToast('Your route');
   }
   drawMap();
 }
