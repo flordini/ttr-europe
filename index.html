@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="TTR Europe"/>
@@ -17,8 +17,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#3a2a10;font-family:
 #toolbar .title{font-size:13px;font-weight:600;color:#e8d5a0;letter-spacing:0.03em;white-space:nowrap}
 #info{font-size:10px;color:rgba(232,213,160,0.65);flex:1;min-width:0}
 #reset-btn{padding:5px 10px;font-size:11px;color:#e8d5a0;background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.25);border-radius:6px;cursor:pointer;white-space:nowrap;flex-shrink:0}
-#map-wrap{flex:1;overflow:auto;background:#e8d9b0;position:relative;-webkit-overflow-scrolling:touch}
-#map-wrap svg{display:block;height:100%;min-width:994px;min-height:613px}
+#map-wrap{flex:1;overflow:hidden;background:#e8d9b0;position:relative;touch-action:none}
+#map-wrap svg{display:block;width:100%;height:100%;min-width:994px;min-height:613px;transform-origin:0 0;}
 #stats{display:flex;gap:6px;padding:6px 10px;background:#3a2a10;flex-shrink:0;flex-wrap:wrap;align-items:center}
 .stat-pill{background:rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;font-size:11px;border:0.5px solid rgba(255,255,255,0.15);color:rgba(232,213,160,0.7);display:flex;align-items:center;gap:5px}
 .stat-pill strong{font-size:14px;font-weight:500;color:#e8d5a0}
@@ -564,6 +564,84 @@ drawMap();
 if(screen.orientation&&screen.orientation.unlock){
   screen.orientation.unlock();
 }
+
+// ── Pinch-zoom + pan on map only ─────────────────────────────
+(function(){
+  const wrap=document.getElementById('map-wrap');
+  let scale=1, tx=0, ty=0;
+  let lastDist=null, lastMid=null, panStart=null;
+  const MIN=0.5, MAX=5;
+
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function applyTransform(){
+    svg.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
+  }
+  function dist(t){
+    const dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY;
+    return Math.sqrt(dx*dx+dy*dy);
+  }
+  function mid(t){
+    return{x:(t[0].clientX+t[1].clientX)/2, y:(t[0].clientY+t[1].clientY)/2};
+  }
+  function wrapOffset(){
+    const r=wrap.getBoundingClientRect();
+    return{x:r.left,y:r.top};
+  }
+
+  wrap.addEventListener('touchstart',e=>{
+    if(e.touches.length===2){
+      lastDist=dist(e.touches);
+      lastMid=mid(e.touches);
+      panStart=null;
+    } else if(e.touches.length===1){
+      panStart={x:e.touches[0].clientX-tx, y:e.touches[0].clientY-ty};
+      lastDist=null;
+    }
+  },{passive:true});
+
+  wrap.addEventListener('touchmove',e=>{
+    if(e.touches.length===2){
+      e.preventDefault();
+      const d=dist(e.touches);
+      const m=mid(e.touches);
+      const wo=wrapOffset();
+      if(lastDist&&lastMid){
+        const ratio=d/lastDist;
+        const newScale=clamp(scale*ratio,MIN,MAX);
+        // zoom toward midpoint
+        const px=m.x-wo.x, py=m.y-wo.y;
+        tx=px-(px-tx)*(newScale/scale);
+        ty=py-(py-ty)*(newScale/scale);
+        scale=newScale;
+      }
+      lastDist=d; lastMid=m;
+      applyTransform();
+    } else if(e.touches.length===1&&panStart){
+      e.preventDefault();
+      tx=e.touches[0].clientX-panStart.x;
+      ty=e.touches[0].clientY-panStart.y;
+      applyTransform();
+    }
+  },{passive:false});
+
+  wrap.addEventListener('touchend',e=>{
+    if(e.touches.length<2){lastDist=null;lastMid=null;}
+    if(e.touches.length===0){panStart=null;}
+  },{passive:true});
+
+  // Mouse wheel zoom (desktop)
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const wo=wrapOffset();
+    const px=e.clientX-wo.x, py=e.clientY-wo.y;
+    const ratio=e.deltaY<0?1.1:0.9;
+    const newScale=clamp(scale*ratio,MIN,MAX);
+    tx=px-(px-tx)*(newScale/scale);
+    ty=py-(py-ty)*(newScale/scale);
+    scale=newScale;
+    applyTransform();
+  },{passive:false});
+})();
 </script>
 </body>
 </html>
