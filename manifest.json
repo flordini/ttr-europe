@@ -4,7 +4,7 @@
   "description": "Interactive map companion for Ticket to Ride Europe",
   "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "landscape",
+  "orientation": "any",
   "background_color": "#2c4a1e",
   "theme_color": "#2c4a1e",
   "icons": [
