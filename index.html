@@ -17,8 +17,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#3a2a10;font-family:
 #toolbar .title{font-size:13px;font-weight:600;color:#e8d5a0;letter-spacing:0.03em;white-space:nowrap}
 #info{font-size:10px;color:rgba(232,213,160,0.65);flex:1;min-width:0}
 #reset-btn{padding:5px 10px;font-size:11px;color:#e8d5a0;background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.25);border-radius:6px;cursor:pointer;white-space:nowrap;flex-shrink:0}
-#map-wrap{flex:1;overflow:auto;background:#4a6a8a;position:relative;-webkit-overflow-scrolling:touch}
-#map-wrap svg{display:block;height:100%;min-width:1020px;min-height:650px}
+#map-wrap{flex:1;overflow:auto;background:#e8d9b0;position:relative;-webkit-overflow-scrolling:touch}
+#map-wrap svg{display:block;height:100%;min-width:994px;min-height:613px}
 #stats{display:flex;gap:6px;padding:6px 10px;background:#3a2a10;flex-shrink:0;flex-wrap:wrap;align-items:center}
 .stat-pill{background:rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;font-size:11px;border:0.5px solid rgba(255,255,255,0.15);color:rgba(232,213,160,0.7);display:flex;align-items:center;gap:5px}
 .stat-pill strong{font-size:14px;font-weight:500;color:#e8d5a0}
@@ -37,7 +37,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#3a2a10;font-family:
     <button id="reset-btn" onclick="resetAll()">Reset</button>
   </div>
   <div id="map-wrap">
-    <svg id="map" viewBox="0 0 1020 650" xmlns="http://www.w3.org/2000/svg"></svg>
+    <svg id="map" viewBox="25 24 994 613" xmlns="http://www.w3.org/2000/svg"></svg>
   </div>
   <div id="stats">
     <div class="stat-pill">Destinations <strong id="stat-dest">0</strong></div>
@@ -50,85 +50,85 @@ html,body{width:100%;height:100%;overflow:hidden;background:#3a2a10;font-family:
 
 <script>
 const CITIES={
-  "Edinburgh":  [108, 52],
-  "London":     [175, 152],
-  "Amsterdam":  [348, 178],
-  "Dieppe":     [212, 218],
-  "Brest":      [98,  292],
-  "Paris":      [255, 300],
-  "Bruxelles":  [318, 238],
-  "Frankfurt":  [408, 268],
-  "Essen":      [420, 200],
-  "Berlin":     [510, 200],
-  "København":  [508, 112],
-  "Stockholm":  [618,  58],
-  "Danzig":     [590, 158],
-  "Riga":       [672, 128],
-  "Petrograd":  [820,  68],
-  "Wilno":      [728, 192],
-  "Warszawa":   [628, 222],
-  "Pamplona":   [192, 392],
-  "Barcelona":  [238, 450],
-  "Madrid":     [138, 478],
-  "Lisboa":     [ 68, 528],
-  "Cádiz":      [108, 590],
-  "Marseille":  [322, 420],
-  "Zürich":     [378, 348],
-  "München":    [460, 298],
-  "Wien":       [548, 288],
-  "Budapest":   [602, 328],
-  "Zagreb":     [530, 378],
-  "Venezia":    [452, 378],
-  "Roma":       [448, 468],
-  "Brindisi":   [542, 522],
-  "Palermo":    [472, 608],
-  "Sarajevo":   [572, 422],
-  "Sofia":      [648, 418],
-  "Athína":     [650, 538],
-  "Smyrna":     [742, 572],
-  "Constantinople": [748, 480],
-  "Ancora":     [838, 530],
-  "București":  [730, 358],
+  "Edinburgh":  [172,  63],
+  "London":     [236, 189],
+  "Amsterdam":  [331, 202],
+  "Dieppe":     [229, 277],
+  "Brest":      [139, 306],
+  "Paris":      [264, 329],
+  "Bruxelles":  [307, 255],
+  "Frankfurt":  [383, 277],
+  "Essen":      [412, 205],
+  "Berlin":     [508, 222],
+  "København":  [470, 117],
+  "Stockholm":  [574,  44],
+  "Danzig":     [603, 152],
+  "Riga":       [677,  81],
+  "Petrograd":  [842,  52],
+  "Wilno":      [748, 193],
+  "Warszawa":   [647, 223],
+  "Pamplona":   [207, 457],
+  "Barcelona":  [220, 544],
+  "Madrid":     [120, 545],
+  "Lisboa":     [ 45, 565],
+  "Cádiz":      [ 91, 617],
+  "Marseille":  [355, 466],
+  "Zürich":     [378, 380],
+  "München":    [444, 331],
+  "Wien":       [565, 310],
+  "Budapest":   [598, 351],
+  "Zagreb":     [522, 374],
+  "Venezia":    [459, 404],
+  "Roma":       [467, 485],
+  "Brindisi":   [538, 522],
+  "Palermo":    [487, 607],
+  "Sarajevo":   [589, 450],
+  "Sofia":      [677, 459],
+  "Athína":     [660, 571],
+  "Smyrna":     [739, 610],
+  "Constantinople": [790, 548],
+  "Ancora":     [856, 589],
+  "București":  [733, 416],
   "Sevastopol": [832, 418],
   "Kyiv":       [762, 262],
-  "Smolensk":   [842, 200],
-  "Kharkov":    [878, 278],
-  "Moskva":     [930, 148],
-  "Rostov":     [940, 338],
-  "Sochi":      [958, 412],
-  "Erzurum":    [952, 530],
+  "Smolensk":   [845, 199],
+  "Kharkov":    [913, 304],
+  "Moskva":     [929, 184],
+  "Rostov":     [959, 364],
+  "Sochi":      [955, 450],
+  "Erzurum":    [933, 566],
 };
 
 const ROUTES=[
   {a:'Lisboa',b:'Madrid',len:3,color:'pink'},
   {a:'Lisboa',b:'Cádiz',len:2,color:'blue'},
   {a:'Cádiz',b:'Madrid',len:3,color:'orange'},
-  {a:'Madrid',b:'Pamplona',len:3,color:'black'},
-  {a:'Madrid',b:'Pamplona',len:3,color:'white'},
+  {a:'Madrid',b:'Pamplona',len:3,color:'black',tunnel:true},
+  {a:'Madrid',b:'Pamplona',len:3,color:'white',tunnel:true},
   {a:'Madrid',b:'Barcelona',len:2,color:'yellow'},
-  {a:'Pamplona',b:'Barcelona',len:2,color:'any'},
+  {a:'Pamplona',b:'Barcelona',len:2,color:'any',tunnel:true},
   {a:'Pamplona',b:'Brest',len:4,color:'pink'},
-  {a:'Pamplona',b:'Paris',len:4,color:'green'},
   {a:'Pamplona',b:'Paris',len:4,color:'blue'},
+  {a:'Pamplona',b:'Paris',len:4,color:'green'},
   {a:'Pamplona',b:'Marseille',len:4,color:'red'},
   {a:'Barcelona',b:'Marseille',len:4,color:'any'},
   {a:'Paris',b:'Marseille',len:4,color:'any'},
   {a:'Dieppe',b:'London',len:2,color:'any',ferry:true},
   {a:'Dieppe',b:'London',len:2,color:'any',ferry:true},
-  {a:'London',b:'Edinburgh',len:4,color:'orange'},
   {a:'London',b:'Edinburgh',len:4,color:'black'},
+  {a:'London',b:'Edinburgh',len:4,color:'orange'},
   {a:'London',b:'Amsterdam',len:2,color:'any',ferry:true},
   {a:'Frankfurt',b:'Amsterdam',len:2,color:'white'},
   {a:'Dieppe',b:'Brest',len:2,color:'orange'},
-  {a:'Paris',b:'Bruxelles',len:2,color:'red'},
   {a:'Paris',b:'Bruxelles',len:2,color:'yellow'},
+  {a:'Paris',b:'Bruxelles',len:2,color:'red'},
   {a:'Paris',b:'Zürich',len:3,color:'any',tunnel:true},
   {a:'Paris',b:'Frankfurt',len:3,color:'white'},
   {a:'Paris',b:'Frankfurt',len:3,color:'orange'},
   {a:'Bruxelles',b:'Amsterdam',len:1,color:'black'},
   {a:'Bruxelles',b:'Frankfurt',len:2,color:'blue'},
-  {a:'Frankfurt',b:'Berlin',len:3,color:'red'},
   {a:'Frankfurt',b:'Berlin',len:3,color:'black'},
+  {a:'Frankfurt',b:'Berlin',len:3,color:'red'},
   {a:'Berlin',b:'Essen',len:2,color:'blue'},
   {a:'Berlin',b:'Danzig',len:4,color:'any'},
   {a:'Berlin',b:'Wien',len:3,color:'green'},
@@ -139,33 +139,34 @@ const ROUTES=[
   {a:'København',b:'Stockholm',len:3,color:'white'},
   {a:'Frankfurt',b:'Essen',len:2,color:'green'},
   {a:'Frankfurt',b:'München',len:2,color:'pink'},
-  {a:'München',b:'Zürich',len:2,color:'orange',tunnel:true},
-  {a:'München',b:'Venezia',len:2,color:'any',tunnel:true},
+  {a:'München',b:'Zürich',len:2,color:'yellow',tunnel:true},
+  {a:'München',b:'Venezia',len:2,color:'blue',tunnel:true},
   {a:'Zürich',b:'Marseille',len:2,color:'pink',tunnel:true},
   {a:'Zürich',b:'Venezia',len:2,color:'green',tunnel:true},
-  {a:'Venezia',b:'Roma',len:2,color:'any'},
+  {a:'Venezia',b:'Roma',len:2,color:'black'},
   {a:'Roma',b:'Brindisi',len:2,color:'white'},
   {a:'Brindisi',b:'Palermo',len:3,color:'any',ferry:true},
   {a:'Brindisi',b:'Athína',len:4,color:'any',ferry:true},
-  {a:'Roma',b:'Marseille',len:4,color:'any'},
+  {a:'Roma',b:'Marseille',len:4,color:'any',tunnel:true},
   {a:'München',b:'Wien',len:3,color:'orange'},
   {a:'Wien',b:'Budapest',len:1,color:'red'},
+  {a:'Wien',b:'Budapest',len:1,color:'white'},
   {a:'Wien',b:'Warszawa',len:4,color:'blue'},
   {a:'Budapest',b:'Zagreb',len:2,color:'orange'},
   {a:'Zagreb',b:'Sarajevo',len:3,color:'red'},
-  {a:'Sarajevo',b:'Sofia',len:2,color:'green'},
+  {a:'Sarajevo',b:'Sofia',len:2,color:'any',tunnel:true},
   {a:'Sofia',b:'Athína',len:3,color:'pink'},
-  {a:'Sofia',b:'București',len:2,color:'any'},
+  {a:'Sofia',b:'București',len:2,color:'any',tunnel:true},
   {a:'București',b:'Kyiv',len:4,color:'any'},
-  {a:'Kyiv',b:'Smolensk',len:3,color:'any'},
+  {a:'Kyiv',b:'Smolensk',len:3,color:'red'},
   {a:'Smolensk',b:'Moskva',len:2,color:'orange'},
   {a:'Kyiv',b:'Warszawa',len:4,color:'any'},
-  {a:'Warszawa',b:'Berlin',len:4,color:'pink'},
   {a:'Warszawa',b:'Berlin',len:4,color:'yellow'},
-  {a:'Warszawa',b:'Danzig',len:2,color:'gray'},
+  {a:'Warszawa',b:'Berlin',len:4,color:'pink'},
+  {a:'Warszawa',b:'Danzig',len:2,color:'any'},
   {a:'Riga',b:'Petrograd',len:4,color:'any'},
   {a:'Brest',b:'Paris',len:3,color:'black'},
-  {a:'Moskva',b:'Kharkov',len:4,color:'gray'},
+  {a:'Moskva',b:'Kharkov',len:4,color:'any'},
   {a:'Rostov',b:'Kharkov',len:2,color:'green'},
   {a:'Rostov',b:'Sochi',len:2,color:'any'},
   {a:'Sevastopol',b:'Sochi',len:2,color:'any',ferry:true},
@@ -174,32 +175,32 @@ const ROUTES=[
   {a:'Budapest',b:'Sarajevo',len:3,color:'pink'},
   {a:'Palermo',b:'Smyrna',len:6,color:'any',ferry:true},
   {a:'Athína',b:'Smyrna',len:2,color:'any',ferry:true},
-  {a:'Smyrna',b:'Ancora',len:3,color:'orange'},
-  {a:'Constantinople',b:'Ancora',len:2,color:'gray'},
-  {a:'Constantinople',b:'Smyrna',len:2,color:'gray'},
+  {a:'Smyrna',b:'Ancora',len:3,color:'orange',tunnel:true},
+  {a:'Constantinople',b:'Ancora',len:2,color:'any',tunnel:true},
+  {a:'Constantinople',b:'Smyrna',len:2,color:'any',tunnel:true},
   {a:'Sofia',b:'Constantinople',len:3,color:'blue'},
   {a:'Sarajevo',b:'Athína',len:4,color:'green'},
-  {a:'Zagreb',b:'Venezia',len:2,color:'gray'},
+  {a:'Zagreb',b:'Venezia',len:2,color:'any'},
   {a:'Constantinople',b:'Sevastopol',len:4,color:'any',ferry:true},
-  {a:'Sochi',b:'Erzurum',len:3,color:'any'},
+  {a:'Sochi',b:'Erzurum',len:3,color:'red',tunnel:true},
   {a:'Sevastopol',b:'Erzurum',len:4,color:'any',ferry:true},
   {a:'Erzurum',b:'Ancora',len:3,color:'black'},
   {a:'Roma',b:'Palermo',len:4,color:'any',ferry:true},
-  {a:'Budapest',b:'Kyiv',len:6,color:'any'},
-  {a:'Stockholm',b:'Petrograd',len:8,color:'any'},
+  {a:'Budapest',b:'Kyiv',len:6,color:'any',tunnel:true},
+  {a:'Stockholm',b:'Petrograd',len:8,color:'any',tunnel:true},
   {a:'Petrograd',b:'Moskva',len:4,color:'white'},
   {a:'Danzig',b:'Riga',len:3,color:'black'},
   {a:'Warszawa',b:'Wilno',len:3,color:'red'},
   {a:'Wilno',b:'Riga',len:4,color:'green'},
   {a:'Petrograd',b:'Wilno',len:4,color:'blue'},
-  {a:'Smolensk',b:'Wilno',len:3,color:'any'},
+  {a:'Smolensk',b:'Wilno',len:3,color:'yellow'},
   {a:'Wilno',b:'Kyiv',len:2,color:'any'},
   {a:'Kyiv',b:'Kharkov',len:4,color:'any'},
-  {a:'București',b:'Budapest',len:4,color:'any'},
+  {a:'București',b:'Budapest',len:4,color:'any',tunnel:true},
   {a:'Bruxelles',b:'Dieppe',len:2,color:'green'},
   {a:'Dieppe',b:'Paris',len:1,color:'pink'},
-  {a:'București',b:'Constantinople',len:3,color:'any'},
-  {a:'Wien',b:'Zagreb',len:2,color:'gray'},
+  {a:'București',b:'Constantinople',len:3,color:'yellow'},
+  {a:'Wien',b:'Zagreb',len:2,color:'any'},
 ];
 ROUTES.forEach((r,i)=>{if(!r.id)r.id=`r${i}`;});
 
@@ -267,59 +268,37 @@ function drawMap(){
   defs.appendChild(halo);
   svg.appendChild(defs);
 
-  // ── Ocean background ──────────────────────────────────────────
-  const ocean=ns('rect');
-  ocean.setAttribute('width','1020');ocean.setAttribute('height','650');
-  ocean.setAttribute('fill','#5d8aaa');
-  svg.appendChild(ocean);
-
-  // Ocean texture lines
-  for(let y=10;y<650;y+=18){
-    const wl=ns('line');
-    wl.setAttribute('x1','0');wl.setAttribute('y1',y);
-    wl.setAttribute('x2','1020');wl.setAttribute('y2',y);
-    wl.setAttribute('stroke','#4a7a9a');wl.setAttribute('stroke-width','1');wl.setAttribute('opacity','0.4');
-    svg.appendChild(wl);
-  }
-
-  // ── Land mass ───────────────────────────────────────────────
-  const landShapes=[
-    // Main continent
-    'M 155,20 L 260,18 L 380,22 L 480,18 L 580,22 L 660,18 L 750,22 L 840,18 L 920,25 L 980,40 L 1010,90 L 1005,170 L 990,250 L 985,330 L 995,400 L 980,470 L 960,530 L 920,580 L 860,610 L 780,625 L 700,630 L 620,628 L 540,632 L 460,628 L 380,620 L 300,608 L 230,590 L 170,565 L 130,530 L 100,490 L 85,440 L 88,380 L 100,320 L 118,260 L 130,200 L 140,140 L 148,80 Z',
-    // UK
-    'M 112,55 L 178,38 L 222,55 L 235,105 L 228,158 L 200,195 L 165,210 L 130,198 L 105,170 L 95,130 L 100,88 Z',
-    // Scandinavia
-    'M 480,20 L 540,16 L 610,20 L 660,35 L 695,58 L 700,95 L 688,135 L 660,155 L 628,158 L 598,142 L 568,115 L 540,80 L 510,52 Z',
-    // Iberian peninsula
-    'M 60,450 L 105,428 L 175,425 L 235,440 L 268,478 L 270,525 L 248,570 L 200,598 L 148,602 L 100,585 L 65,555 L 48,510 Z',
-    // Italy
-    'M 415,390 L 462,375 L 490,395 L 505,430 L 518,475 L 528,520 L 515,560 L 492,585 L 465,590 L 442,572 L 430,540 L 422,498 L 415,450 Z',
-    // Greece
-    'M 620,490 L 655,475 L 688,482 L 700,510 L 698,548 L 675,568 L 648,572 L 625,555 L 615,528 L 616,502 Z',
-    // Turkey
-    'M 735,455 L 790,440 L 860,445 L 930,460 L 975,490 L 990,528 L 978,565 L 948,585 L 898,592 L 848,588 L 805,572 L 772,548 L 752,515 L 738,482 Z',
-  ];
-
-  landShapes.forEach(d=>{
-    const land=ns('path');
-    land.setAttribute('d',d);
-    land.setAttribute('fill','#c8b882');
-    land.setAttribute('stroke','#a09060');
-    land.setAttribute('stroke-width','1');
-    svg.appendChild(land);
-    // Parchment texture overlay
-    const tex=ns('path');
-    tex.setAttribute('d',d);
-    tex.setAttribute('fill','#d4c48a');
-    tex.setAttribute('opacity','0.35');
-    tex.setAttribute('filter','url(#parchment)');
-    tex.setAttribute('pointer-events','none');
-    svg.appendChild(tex);
-  });
+  // ── Background ────────────────────────────────────────────────
+  const bg=ns('rect');
+  bg.setAttribute('width','979');bg.setAttribute('height','637');
+  bg.setAttribute('fill','#e8d9b0');
+  svg.appendChild(bg);
 
   // ── Shortest path highlight (drawn under routes) ──────────────
   const pathResult=state.destinations.size>=2?findAllPaths():null;
   const pathIds=pathResult?pathResult.routeIds:new Set();
+
+  // ── All glows — drawn UNDER route cars ───────────────────────
+  ROUTES.forEach(r=>{
+    const isMine=state.myRoutes.has(r.id);
+    const isOpp=state.oppRoutes.has(r.id);
+    const isPath=pathIds.has(r.id)&&!isMine&&!isOpp;
+    if(!isMine&&!isOpp&&!isPath)return;
+    if(!CITIES[r.a]||!CITIES[r.b])return;
+    const off=routeOffset(r,ROUTES);
+    const [ox,oy]=perp(r.a,r.b,off);
+    const ax=CITIES[r.a][0]+ox,ay=CITIES[r.a][1]+oy;
+    const bx=CITIES[r.b][0]+ox,by=CITIES[r.b][1]+oy;
+    const glow=ns('line');
+    glow.setAttribute('x1',ax);glow.setAttribute('y1',ay);
+    glow.setAttribute('x2',bx);glow.setAttribute('y2',by);
+    glow.setAttribute('stroke',isMine?'#00cc44':isOpp?'#ff2200':'#FFD700');
+    glow.setAttribute('stroke-width','18');
+    glow.setAttribute('stroke-opacity','0.85');
+    glow.setAttribute('stroke-linecap','round');
+    glow.setAttribute('pointer-events','none');
+    svg.appendChild(glow);
+  });
 
   // ── Routes ────────────────────────────────────────────────────
   ROUTES.forEach(r=>{
@@ -338,21 +317,12 @@ function drawMap(){
 
     const totalLen=Math.sqrt((bx-ax)**2+(by-ay)**2);
     const segCount=r.len;
-    const gap=3; // gap between car boxes in px
+    const gap=3;
     const carLen=(totalLen-(gap*(segCount-1)))/segCount;
     const dx=(bx-ax)/totalLen,dy=(by-ay)/totalLen;
-    const pw=isMine||isOpp?5.5:4.5; // half-width of car box
+    const pw=4.5;
 
-    // Path highlight glow under segments
-    if(isPath){
-      const glow=ns('line');
-      glow.setAttribute('x1',ax);glow.setAttribute('y1',ay);
-      glow.setAttribute('x2',bx);glow.setAttribute('y2',by);
-      glow.setAttribute('stroke','#FFD700');glow.setAttribute('stroke-width','16');
-      glow.setAttribute('stroke-opacity','0.75');glow.setAttribute('stroke-linecap','round');
-      glow.setAttribute('pointer-events','none');
-      svg.appendChild(glow);
-    }
+    // Path highlight drawn in a separate pass after all routes — see below
 
     // Draw each car as a rounded rectangle
     for(let i=0;i<segCount;i++){
@@ -363,7 +333,6 @@ function drawMap(){
       const mx=(x1+x2)/2,my=(y1+y2)/2;
       const angle=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
 
-      // outer border box
       const border=ns('rect');
       border.setAttribute('x',-(carLen/2)-1);border.setAttribute('y',-(pw+1));
       border.setAttribute('width',carLen+2);border.setAttribute('height',(pw+1)*2);
@@ -373,22 +342,18 @@ function drawMap(){
       border.setAttribute('pointer-events','none');
       svg.appendChild(border);
 
-      // main car fill
       const car=ns('rect');
       car.setAttribute('x',-carLen/2);car.setAttribute('y',-pw);
       car.setAttribute('width',carLen);car.setAttribute('height',pw*2);
       car.setAttribute('rx','2');
-      car.setAttribute('fill', isOpp?'#cc2200':isMine?'#116611':cs.fill);
-      car.setAttribute('stroke', isOpp?'#ff6644':isMine?'#44bb44':'rgba(255,255,255,0.25)');
+      car.setAttribute('fill',cs.fill);
+      car.setAttribute('stroke','rgba(255,255,255,0.25)');
       car.setAttribute('stroke-width','0.5');
-      if(!isMine&&!isOpp){
-        car.setAttribute('fill-opacity','0.88');
-      }
+      car.setAttribute('fill-opacity','0.88');
       car.setAttribute('transform',`translate(${mx},${my}) rotate(${angle})`);
       car.setAttribute('pointer-events','none');
       svg.appendChild(car);
 
-      // sheen highlight on top half
       const sheen=ns('rect');
       sheen.setAttribute('x',-carLen/2+1);sheen.setAttribute('y',-pw+0.5);
       sheen.setAttribute('width',carLen-2);sheen.setAttribute('height',pw*0.7);
@@ -398,8 +363,7 @@ function drawMap(){
       sheen.setAttribute('pointer-events','none');
       svg.appendChild(sheen);
 
-      // ferry: wavy overlay
-      if(r.ferry&&!isMine&&!isOpp){
+      if(r.ferry){
         const fw=ns('line');
         fw.setAttribute('x1',-carLen/2+2);fw.setAttribute('y1','0');
         fw.setAttribute('x2',carLen/2-2);fw.setAttribute('y2','0');
@@ -409,17 +373,20 @@ function drawMap(){
         fw.setAttribute('pointer-events','none');
         svg.appendChild(fw);
       }
+    }
 
-      // tunnel: dark end caps
-      if(r.tunnel&&!isMine&&!isOpp&&(i===0||i===segCount-1)){
-        const cap=ns('rect');
-        cap.setAttribute('x', i===0?-carLen/2:-carLen/2+carLen-3);
-        cap.setAttribute('y',-pw);cap.setAttribute('width','3');cap.setAttribute('height',pw*2);
-        cap.setAttribute('fill','rgba(0,0,0,0.35)');
-        cap.setAttribute('transform',`translate(${mx},${my}) rotate(${angle})`);
-        cap.setAttribute('pointer-events','none');
-        svg.appendChild(cap);
-      }
+    // Tunnel: dashed outline on top of cars
+    if(r.tunnel&&!isMine&&!isOpp){
+      const outline=ns('line');
+      outline.setAttribute('x1',ax);outline.setAttribute('y1',ay);
+      outline.setAttribute('x2',bx);outline.setAttribute('y2',by);
+      outline.setAttribute('stroke','#1a0e00');
+      outline.setAttribute('stroke-width','11');
+      outline.setAttribute('stroke-linecap','butt');
+      outline.setAttribute('stroke-dasharray','4 8');
+      outline.setAttribute('stroke-opacity','0.55');
+      outline.setAttribute('pointer-events','none');
+      svg.appendChild(outline);
     }
 
     // invisible wide hit area
@@ -447,17 +414,16 @@ function drawMap(){
   // ── Cities ────────────────────────────────────────────────────
   Object.entries(CITIES).forEach(([name,[x,y]])=>{
     const isDest=state.destinations.has(name);
-    const g=ns('g');g.setAttribute('cursor','pointer');
+    const g=ns('g');
+    g.setAttribute('cursor','pointer');
     g.addEventListener('click',e=>{e.stopPropagation();toggleDest(name);});
 
-    // drop shadow
     const shadow=ns('circle');
     shadow.setAttribute('cx',x+1.5);shadow.setAttribute('cy',y+1.5);
     shadow.setAttribute('r',isDest?9:7);
     shadow.setAttribute('fill','rgba(0,0,0,0.35)');
     g.appendChild(shadow);
 
-    // outer ring
     const ring=ns('circle');
     ring.setAttribute('cx',x);ring.setAttribute('cy',y);
     ring.setAttribute('r',isDest?9:7);
@@ -466,14 +432,12 @@ function drawMap(){
     ring.setAttribute('stroke-width',isDest?'2':'1.5');
     g.appendChild(ring);
 
-    // inner circle
     const inner=ns('circle');
     inner.setAttribute('cx',x);inner.setAttribute('cy',y);
     inner.setAttribute('r',isDest?5:4);
     inner.setAttribute('fill',isDest?'#fff5cc':'#e8c878');
     g.appendChild(inner);
 
-    // label with halo
     const label=ns('text');
     label.setAttribute('x',x+10);label.setAttribute('y',y+4);
     label.setAttribute('font-size','8.5');
