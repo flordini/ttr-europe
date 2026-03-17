@@ -18,7 +18,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2c4a1e;font-family:
 #info{font-size:10px;color:rgba(232,213,160,0.65);flex:1;min-width:0}
 #reset-btn{padding:5px 10px;font-size:11px;color:#e8d5a0;background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.25);border-radius:6px;cursor:pointer;white-space:nowrap;flex-shrink:0}
 #map-wrap{flex:1;overflow:auto;background:#d4e8c2;position:relative;-webkit-overflow-scrolling:touch}
-#map-wrap svg{display:block;height:100%;min-width:900px;min-height:600px}
+#map-wrap svg{display:block;height:100%;min-width:1150px;min-height:720px}
 #stats{display:flex;gap:6px;padding:6px 10px;background:#2c4a1e;flex-shrink:0;flex-wrap:wrap;align-items:center}
 .stat-pill{background:rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;font-size:11px;border:0.5px solid rgba(255,255,255,0.15);color:rgba(232,213,160,0.7);display:flex;align-items:center;gap:5px}
 .stat-pill strong{font-size:14px;font-weight:500;color:#e8d5a0}
@@ -37,7 +37,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2c4a1e;font-family:
     <button id="reset-btn" onclick="resetAll()">Reset</button>
   </div>
   <div id="map-wrap">
-    <svg id="map" viewBox="0 0 1000 680" xmlns="http://www.w3.org/2000/svg"></svg>
+    <svg id="map" viewBox="0 0 1150 720" xmlns="http://www.w3.org/2000/svg"></svg>
   </div>
   <div id="stats">
     <div class="stat-pill">Destinations <strong id="stat-dest">0</strong></div>
@@ -190,7 +190,7 @@ function showToast(msg){
 function drawMap(){
   svg.innerHTML='';
   const bg=ns('rect');
-  bg.setAttribute('width','1100');bg.setAttribute('height','700');
+  bg.setAttribute('width','1150');bg.setAttribute('height','720');
   bg.setAttribute('fill','#d4e8c2');svg.appendChild(bg);
 
   ROUTES.forEach(r=>{
