@@ -49,123 +49,107 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2c4a1e;font-family:
 <div id="toast"></div>
 
 <script>
-const CITIES={
-  Lisboa:[30,430],Cadiz:[80,530],Madrid:[130,430],Pamplona:[210,350],
-  Barcelona:[270,420],Marseille:[350,420],Brest:[130,230],Paris:[260,260],
-  Dieppe:[240,200],London:[270,140],Amsterdam:[360,170],Bruxelles:[340,220],
-  Zurich:[410,330],Genova:[410,420],Roma:[490,500],Brindisi:[580,540],
-  Palermo:[510,590],Athina:[680,580],Sofia:[680,470],Sarajevo:[580,440],
-  Zagreb:[530,360],Venezia:[490,370],Milano:[420,360],Munchen:[480,280],
-  Frankfurt:[420,230],Essen:[400,180],Kobenhavn:[490,120],Stockholm:[580,80],
-  Oslo:[460,60],Hamburg:[450,160],Berlin:[510,200],Danzig:[600,170],
-  Warszawa:[640,230],Krakow:[630,280],Wien:[560,300],Budapest:[600,350],
-  Kyiv:[750,270],Kharkiv:[800,300],Rostov:[840,400],Erzurum:[900,520],
-  Angora:[840,540],Constantinople:[760,500],Smyrna:[740,560],
-  Sevastopol:[800,460],Bucuresti:[700,400],Wilno:[700,200],Riga:[680,140],
-  Petrograd:[730,80],Helsinki:[660,85],Smolensk:[760,200],Moskva:[820,180],
-};
+const CITIES={"Lisboa":[26,607],"Madrid":[116,547],"Cádiz":[84,652],"Barcelona":[196,535],"Brest":[89,345],"Pamplona":[177,457],"Paris":[219,352],"Marseille":[315,465],"Dieppe":[179,290],"London":[160,168],"Edinburgh":[105,51],"Amsterdam":[355,199],"Bruxelles":[270,271],"Frankfurt":[380,300],"Berlin":[515,241],"Essen":[439,218],"København":[565,82],"Stockholm":[654,45],"Wien":[568,313],"Budapest":[659,358],"Zürich":[377,388],"Roma":[450,500],"Palermo":[488,665],"Brindisi":[552,585],"Athína":[735,593],"Sofia":[698,450],"București":[849,390],"Kyiv":[843,288],"Moskva":[1025,134],"Riga":[720,130],"Petrograd":[900,80],"Warszawa":[650,230],"Danzig":[612,165],"Smolensk":[916,189],"Sarajevo":[603,498],"Zagreb":[545,424],"Venezia":[457,426],"München":[460,350],"Smyrna":[823,665],"Ancora":[950,647],"Erzurum":[1044,593],"Sochi":[1077,452],"Rostov":[1081,335],"Kharkov":[982,293],"Sevastopol":[963,454],"Constantinople":[846,530],"Wilno":[807,187]};
 
 const ROUTES=[
-  {a:'Lisboa',b:'Cadiz',len:2,color:'purple'},
   {a:'Lisboa',b:'Madrid',len:3,color:'pink'},
-  {a:'Cadiz',b:'Madrid',len:3,color:'orange'},
+  {a:'Lisboa',b:'Cádiz',len:2,color:'blue'},
+  {a:'Cádiz',b:'Madrid',len:3,color:'orange'},
   {a:'Madrid',b:'Pamplona',len:3,color:'black'},
-  {a:'Madrid',b:'Barcelona',len:4,color:'yellow'},
-  {a:'Barcelona',b:'Pamplona',len:2,color:'any'},
+  {a:'Madrid',b:'Pamplona',len:3,color:'white'},
+  {a:'Madrid',b:'Barcelona',len:2,color:'yellow'},
+  {a:'Pamplona',b:'Barcelona',len:2,color:'any'},
   {a:'Pamplona',b:'Brest',len:4,color:'pink'},
+  {a:'Pamplona',b:'Paris',len:4,color:'green'},
   {a:'Pamplona',b:'Paris',len:4,color:'blue'},
+  {a:'Pamplona',b:'Marseille',len:4,color:'red'},
   {a:'Barcelona',b:'Marseille',len:4,color:'any'},
-  {a:'Brest',b:'Paris',len:3,color:'black'},
-  {a:'Brest',b:'Dieppe',len:2,color:'orange'},
-  {a:'Dieppe',b:'Paris',len:1,color:'pink'},
-  {a:'London',b:'Dieppe',len:2,color:'any',ferry:true},
-  {a:'London',b:'Amsterdam',len:2,color:'any',ferry:true},
-  {a:'Dieppe',b:'Bruxelles',len:2,color:'green'},
-  {a:'Paris',b:'Bruxelles',len:2,color:'yellow'},
-  {a:'Paris',b:'Frankfurt',len:3,color:'white'},
-  {a:'Paris',b:'Zurich',len:3,color:'any',tunnel:true},
   {a:'Paris',b:'Marseille',len:4,color:'any'},
-  {a:'Marseille',b:'Zurich',len:2,color:'pink',tunnel:true},
-  {a:'Marseille',b:'Genova',len:2,color:'any'},
-  {a:'Bruxelles',b:'Frankfurt',len:2,color:'blue'},
+  {a:'Dieppe',b:'London',len:2,color:'any',ferry:true},
+  {a:'London',b:'Edinburgh',len:4,color:'orange'},
+  {a:'London',b:'Edinburgh',len:4,color:'black'},
+  {a:'London',b:'Amsterdam',len:2,color:'any',ferry:true},
+  {a:'Frankfurt',b:'Amsterdam',len:2,color:'white'},
+  {a:'Dieppe',b:'Brest',len:2,color:'orange'},
+  {a:'Paris',b:'Bruxelles',len:2,color:'red'},
+  {a:'Paris',b:'Bruxelles',len:2,color:'yellow'},
+  {a:'Paris',b:'Zürich',len:3,color:'any',tunnel:true},
+  {a:'Paris',b:'Frankfurt',len:3,color:'white'},
+  {a:'Paris',b:'Frankfurt',len:3,color:'orange'},
   {a:'Bruxelles',b:'Amsterdam',len:1,color:'black'},
-  {a:'Amsterdam',b:'Frankfurt',len:2,color:'white'},
-  {a:'Frankfurt',b:'Essen',len:2,color:'green'},
-  {a:'Frankfurt',b:'Munchen',len:2,color:'pink'},
-  {a:'Essen',b:'Hamburg',len:2,color:'red'},
-  {a:'Essen',b:'Amsterdam',len:3,color:'yellow'},
-  {a:'Hamburg',b:'Berlin',len:2,color:'white'},
-  {a:'Hamburg',b:'Kobenhavn',len:3,color:'orange',ferry:true},
-  {a:'Kobenhavn',b:'Oslo',len:2,color:'any',ferry:true},
-  {a:'Kobenhavn',b:'Stockholm',len:3,color:'yellow'},
-  {a:'Oslo',b:'Stockholm',len:3,color:'any'},
-  {a:'Stockholm',b:'Petrograd',len:8,color:'any'},
-  {a:'Stockholm',b:'Danzig',len:3,color:'any',ferry:true},
-  {a:'Munchen',b:'Zurich',len:2,color:'orange',tunnel:true},
-  {a:'Munchen',b:'Wien',len:3,color:'orange'},
-  {a:'Munchen',b:'Frankfurt',len:2,color:'pink'},
-  {a:'Zurich',b:'Venezia',len:2,color:'green',tunnel:true},
-  {a:'Zurich',b:'Genova',len:3,color:'blue',tunnel:true},
-  {a:'Genova',b:'Venezia',len:2,color:'any'},
-  {a:'Genova',b:'Roma',len:3,color:'any'},
-  {a:'Venezia',b:'Zagreb',len:2,color:'gray'},
-  {a:'Venezia',b:'Milano',len:2,color:'orange'},
-  {a:'Milano',b:'Zurich',len:2,color:'red',tunnel:true},
-  {a:'Milano',b:'Genova',len:1,color:'any'},
-  {a:'Roma',b:'Brindisi',len:2,color:'white'},
-  {a:'Roma',b:'Palermo',len:4,color:'any',ferry:true},
-  {a:'Brindisi',b:'Palermo',len:3,color:'any',ferry:true},
-  {a:'Brindisi',b:'Sarajevo',len:2,color:'gray'},
-  {a:'Palermo',b:'Athina',len:4,color:'any',ferry:true},
-  {a:'Berlin',b:'Frankfurt',len:3,color:'black'},
-  {a:'Berlin',b:'Wien',len:3,color:'green'},
+  {a:'Bruxelles',b:'Frankfurt',len:2,color:'blue'},
+  {a:'Frankfurt',b:'Berlin',len:3,color:'red'},
+  {a:'Frankfurt',b:'Berlin',len:3,color:'black'},
+  {a:'Berlin',b:'Essen',len:2,color:'blue'},
   {a:'Berlin',b:'Danzig',len:4,color:'any'},
-  {a:'Berlin',b:'Warszawa',len:4,color:'pink'},
-  {a:'Danzig',b:'Warszawa',len:2,color:'gray'},
-  {a:'Danzig',b:'Riga',len:3,color:'black'},
-  {a:'Wien',b:'Budapest',len:2,color:'red'},
-  {a:'Wien',b:'Sarajevo',len:2,color:'blue'},
-  {a:'Wien',b:'Zagreb',len:2,color:'gray'},
+  {a:'Berlin',b:'Wien',len:3,color:'green'},
+  {a:'Essen',b:'Amsterdam',len:3,color:'yellow'},
+  {a:'Essen',b:'København',len:3,color:'any',ferry:true},
+  {a:'København',b:'Stockholm',len:3,color:'yellow'},
+  {a:'København',b:'Stockholm',len:3,color:'white'},
+  {a:'Frankfurt',b:'Essen',len:2,color:'green'},
+  {a:'Frankfurt',b:'München',len:2,color:'pink'},
+  {a:'München',b:'Zürich',len:2,color:'orange',tunnel:true},
+  {a:'München',b:'Venezia',len:2,color:'any',tunnel:true},
+  {a:'Zürich',b:'Marseille',len:2,color:'pink',tunnel:true},
+  {a:'Zürich',b:'Venezia',len:2,color:'green',tunnel:true},
+  {a:'Venezia',b:'Roma',len:2,color:'any'},
+  {a:'Roma',b:'Brindisi',len:2,color:'white'},
+  {a:'Brindisi',b:'Palermo',len:3,color:'any',ferry:true},
+  {a:'Brindisi',b:'Athína',len:4,color:'any',ferry:true},
+  {a:'Roma',b:'Marseille',len:4,color:'any'},
+  {a:'München',b:'Wien',len:3,color:'orange'},
+  {a:'Wien',b:'Budapest',len:1,color:'red'},
+  {a:'Wien',b:'Warszawa',len:4,color:'blue'},
   {a:'Budapest',b:'Zagreb',len:2,color:'orange'},
-  {a:'Budapest',b:'Sarajevo',len:2,color:'pink'},
-  {a:'Budapest',b:'Bucuresti',len:4,color:'any'},
-  {a:'Budapest',b:'Kyiv',len:6,color:'any'},
-  {a:'Budapest',b:'Wien',len:2,color:'white'},
+  {a:'Zagreb',b:'Sarajevo',len:3,color:'red'},
   {a:'Sarajevo',b:'Sofia',len:2,color:'green'},
-  {a:'Sarajevo',b:'Athina',len:4,color:'green'},
-  {a:'Sofia',b:'Athina',len:3,color:'pink'},
-  {a:'Sofia',b:'Constantinople',len:3,color:'blue'},
-  {a:'Sofia',b:'Bucuresti',len:2,color:'any'},
-  {a:'Athina',b:'Smyrna',len:2,color:'any',ferry:true},
-  {a:'Constantinople',b:'Athina',len:3,color:'blue'},
-  {a:'Constantinople',b:'Smyrna',len:2,color:'gray'},
-  {a:'Constantinople',b:'Angora',len:2,color:'gray'},
-  {a:'Angora',b:'Smyrna',len:3,color:'orange'},
-  {a:'Angora',b:'Erzurum',len:3,color:'black'},
-  {a:'Erzurum',b:'Sevastopol',len:4,color:'any',ferry:true},
-  {a:'Sevastopol',b:'Constantinople',len:4,color:'any',ferry:true},
-  {a:'Sevastopol',b:'Rostov',len:4,color:'any'},
-  {a:'Sevastopol',b:'Bucuresti',len:4,color:'white'},
-  {a:'Rostov',b:'Kharkiv',len:2,color:'green'},
-  {a:'Kharkiv',b:'Kyiv',len:4,color:'any'},
-  {a:'Kharkiv',b:'Moskva',len:4,color:'gray'},
-  {a:'Moskva',b:'Smolensk',len:2,color:'orange'},
-  {a:'Moskva',b:'Petrograd',len:4,color:'white'},
-  {a:'Smolensk',b:'Wilno',len:3,color:'any'},
-  {a:'Smolensk',b:'Kyiv',len:3,color:'any'},
-  {a:'Wilno',b:'Kyiv',len:4,color:'any'},
-  {a:'Wilno',b:'Warszawa',len:3,color:'red'},
-  {a:'Wilno',b:'Riga',len:4,color:'green'},
-  {a:'Wilno',b:'Petrograd',len:4,color:'blue'},
-  {a:'Riga',b:'Petrograd',len:4,color:'any'},
-  {a:'Petrograd',b:'Helsinki',len:3,color:'any'},
-  {a:'Helsinki',b:'Stockholm',len:3,color:'any',ferry:true},
-  {a:'Warszawa',b:'Krakow',len:2,color:'any'},
-  {a:'Krakow',b:'Bucuresti',len:6,color:'any'},
-  {a:'Krakow',b:'Wien',len:4,color:'blue'},
-  {a:'Krakow',b:'Budapest',len:3,color:'orange'},
-  {a:'Bucuresti',b:'Kyiv',len:4,color:'any'},
+  {a:'Sofia',b:'Athína',len:3,color:'pink'},
+  {a:'Sofia',b:'București',len:2,color:'any'},
+  {a:'București',b:'Kyiv',len:4,color:'any'},
   {a:'Kyiv',b:'Smolensk',len:3,color:'any'},
+  {a:'Smolensk',b:'Moskva',len:2,color:'orange'},
+  {a:'Kyiv',b:'Warszawa',len:4,color:'any'},
+  {a:'Warszawa',b:'Berlin',len:4,color:'pink'},
+  {a:'Warszawa',b:'Berlin',len:4,color:'yellow'},
+  {a:'Warszawa',b:'Danzig',len:2,color:'gray'},
+  {a:'Riga',b:'Petrograd',len:4,color:'any'},
+  {a:'Brest',b:'Paris',len:3,color:'black'},
+  {a:'Moskva',b:'Kharkov',len:4,color:'gray'},
+  {a:'Rostov',b:'Kharkov',len:2,color:'green'},
+  {a:'Rostov',b:'Sochi',len:2,color:'any'},
+  {a:'Sevastopol',b:'Sochi',len:2,color:'any',ferry:true},
+  {a:'Sevastopol',b:'Rostov',len:4,color:'any'},
+  {a:'București',b:'Sevastopol',len:4,color:'white'},
+  {a:'Budapest',b:'Sarajevo',len:3,color:'pink'},
+  {a:'Palermo',b:'Smyrna',len:6,color:'any',ferry:true},
+  {a:'Athína',b:'Smyrna',len:2,color:'any',ferry:true},
+  {a:'Smyrna',b:'Ancora',len:3,color:'orange'},
+  {a:'Constantinople',b:'Ancora',len:2,color:'gray'},
+  {a:'Constantinople',b:'Smyrna',len:2,color:'gray'},
+  {a:'Sofia',b:'Constantinople',len:3,color:'blue'},
+  {a:'Sarajevo',b:'Athína',len:4,color:'green'},
+  {a:'Zagreb',b:'Venezia',len:2,color:'gray'},
+  {a:'Constantinople',b:'Sevastopol',len:4,color:'any',ferry:true},
+  {a:'Sochi',b:'Erzurum',len:3,color:'any'},
+  {a:'Sevastopol',b:'Erzurum',len:4,color:'any',ferry:true},
+  {a:'Erzurum',b:'Ancora',len:3,color:'black'},
+  {a:'Roma',b:'Palermo',len:4,color:'any',ferry:true},
+  {a:'Budapest',b:'Kyiv',len:6,color:'any'},
+  {a:'Stockholm',b:'Petrograd',len:8,color:'any'},
+  {a:'Petrograd',b:'Moskva',len:4,color:'white'},
+  {a:'Danzig',b:'Riga',len:3,color:'black'},
+  {a:'Warszawa',b:'Wilno',len:3,color:'red'},
+  {a:'Wilno',b:'Riga',len:4,color:'green'},
+  {a:'Petrograd',b:'Wilno',len:4,color:'blue'},
+  {a:'Smolensk',b:'Wilno',len:3,color:'any'},
+  {a:'Wilno',b:'Kyiv',len:2,color:'any'},
+  {a:'Kyiv',b:'Kharkov',len:4,color:'any'},
+  {a:'București',b:'Budapest',len:4,color:'any'},
+  {a:'Bruxelles',b:'Dieppe',len:2,color:'green'},
+  {a:'Dieppe',b:'Paris',len:1,color:'pink'},
+  {a:'București',b:'Constantinople',len:3,color:'any'},
+  {a:'Wien',b:'Zagreb',len:2,color:'gray'},
 ];
 ROUTES.forEach((r,i)=>{if(!r.id)r.id=`r${i}`;});
 
@@ -180,7 +164,7 @@ const COLOR_STYLE={
 
 let state={destinations:new Set(),myRoutes:new Set(),oppRoutes:new Set()};
 const svg=document.getElementById('map');
-let lastTouch=0; // global — survives drawMap() rerenders
+let lastTouch=0;
 
 function perp(a,b,offset){
   const dx=CITIES[b][0]-CITIES[a][0],dy=CITIES[b][1]-CITIES[a][1];
@@ -204,7 +188,7 @@ function showToast(msg){
 function drawMap(){
   svg.innerHTML='';
   const bg=ns('rect');
-  bg.setAttribute('width','1000');bg.setAttribute('height','680');
+  bg.setAttribute('width','1100');bg.setAttribute('height','700');
   bg.setAttribute('fill','#d4e8c2');svg.appendChild(bg);
 
   ROUTES.forEach(r=>{
@@ -215,7 +199,9 @@ function drawMap(){
     const bx=CITIES[r.b][0]+ox,by=CITIES[r.b][1]+oy;
     const isMine=state.myRoutes.has(r.id);
     const isOpp=state.oppRoutes.has(r.id);
-    const cs=COLOR_STYLE[r.color]||COLOR_STYLE.any;
+    const isSecond=routeOffset(r,ROUTES)>0;
+    const activeColor=(isSecond&&r.color2)?r.color2:r.color;
+    const cs=COLOR_STYLE[activeColor]||COLOR_STYLE.any;
 
     const track=ns('line');
     track.setAttribute('x1',ax);track.setAttribute('y1',ay);
@@ -234,7 +220,7 @@ function drawMap(){
       const tick=ns('line');
       tick.setAttribute('x1',tx-py);tick.setAttribute('y1',ty+px);
       tick.setAttribute('x2',tx+py);tick.setAttribute('y2',ty-px);
-      tick.setAttribute('stroke',isMine?'#1a5a1a':isOpp?'#a02020':cs.fill);
+      tick.setAttribute('stroke',isMine?'#1a5a1a':isOpp?'#a02020':(COLOR_STYLE[activeColor]||COLOR_STYLE.any).fill);
       tick.setAttribute('stroke-width','1.5');tick.setAttribute('stroke-opacity','0.7');
       svg.appendChild(tick);
     }
@@ -255,7 +241,7 @@ function drawMap(){
     hit.addEventListener('click',e=>{
       e.preventDefault();
       e.stopPropagation();
-      if(Date.now()-lastTouch<500)return; // kill ghost click from touch
+      if(Date.now()-lastTouch<500)return;
       cycleRoute(r.id);
     });
 
