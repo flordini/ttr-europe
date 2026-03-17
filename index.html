@@ -251,23 +251,39 @@ function drawMap(){
     hit.addEventListener('contextmenu',e=>{e.preventDefault();e.stopPropagation();toggleRoute(r.id,true);});
 
     // Mobile long-press
-    let pressTimer=null;
-    hit.addEventListener('touchstart',e=>{
-      pressTimer=setTimeout(()=>{
-        pressTimer=null;
-        toggleRoute(r.id,true);
-      },500);
-    },{passive:true});
-    hit.addEventListener('touchend',e=>{
-      e.preventDefault();
-      if(pressTimer){clearTimeout(pressTimer);pressTimer=null;toggleRoute(r.id,false);}
-    };
-    hit.addEventListener('touchmove',e=>{
-      if(pressTimer){clearTimeout(pressTimer);pressTimer=null;}
-    },{passive:true});
+    let pressTimer = null;
+let didLongPress = false;  // ← add this flag
 
-    svg.appendChild(hit);
-  });
+hit.addEventListener('touchstart', e => {
+  didLongPress = false;
+  pressTimer = setTimeout(() => {
+    didLongPress = true;
+    pressTimer = null;
+    toggleRoute(r.id, true);
+  }, 500);
+}, {passive: true});
+
+hit.addEventListener('touchend', e => {
+  if (pressTimer) {
+    clearTimeout(pressTimer);
+    pressTimer = null;
+    toggleRoute(r.id, false);
+  }
+}, {passive: true});          // ← keep passive: true
+
+hit.addEventListener('touchmove', e => {
+  if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+}, {passive: true});
+
+hit.addEventListener('click', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (didLongPress) {
+    didLongPress = false;  // ← swallow the ghost click after a long-press
+    return;
+  }
+  toggleRoute(r.id, false);  // desktop only path now
+});
 
   // Shortest path highlight
   if(state.destinations.size>=2){
