@@ -561,9 +561,11 @@ if('serviceWorker' in navigator){
 }
 
 drawMap();
-if(screen.orientation&&screen.orientation.unlock){
-  screen.orientation.unlock();
-}
+try{
+  if(screen.orientation&&screen.orientation.unlock){
+    screen.orientation.unlock();
+  }
+}catch(e){}
 
 // ── Pinch-zoom + pan on map only ─────────────────────────────
 (function(){
@@ -573,6 +575,17 @@ if(screen.orientation&&screen.orientation.unlock){
   const MIN=0.5, MAX=5;
 
   function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+  function clampTranslation(nx,ny,ns){
+    const ww=wrap.clientWidth, wh=wrap.clientHeight;
+    const mapW=svg.clientWidth*ns, mapH=svg.clientHeight*ns;
+    // allow at most 80% of map to go off screen on any side
+    const margin=0.2;
+    const minX=-(mapW*(1-margin)), maxX=ww*( 1-margin);
+    const minY=-(mapH*(1-margin)), maxY=wh*(1-margin);
+    return{x:clamp(nx,minX,maxX), y:clamp(ny,minY,maxY)};
+  }
+
   function applyTransform(){
     svg.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
   }
@@ -608,18 +621,20 @@ if(screen.orientation&&screen.orientation.unlock){
       if(lastDist&&lastMid){
         const ratio=d/lastDist;
         const newScale=clamp(scale*ratio,MIN,MAX);
-        // zoom toward midpoint
         const px=m.x-wo.x, py=m.y-wo.y;
-        tx=px-(px-tx)*(newScale/scale);
-        ty=py-(py-ty)*(newScale/scale);
-        scale=newScale;
+        let nx=px-(px-tx)*(newScale/scale);
+        let ny=py-(py-ty)*(newScale/scale);
+        const c=clampTranslation(nx,ny,newScale);
+        tx=c.x; ty=c.y; scale=newScale;
       }
       lastDist=d; lastMid=m;
       applyTransform();
     } else if(e.touches.length===1&&panStart){
       e.preventDefault();
-      tx=e.touches[0].clientX-panStart.x;
-      ty=e.touches[0].clientY-panStart.y;
+      const nx=e.touches[0].clientX-panStart.x;
+      const ny=e.touches[0].clientY-panStart.y;
+      const c=clampTranslation(nx,ny,scale);
+      tx=c.x; ty=c.y;
       applyTransform();
     }
   },{passive:false});
@@ -636,9 +651,10 @@ if(screen.orientation&&screen.orientation.unlock){
     const px=e.clientX-wo.x, py=e.clientY-wo.y;
     const ratio=e.deltaY<0?1.1:0.9;
     const newScale=clamp(scale*ratio,MIN,MAX);
-    tx=px-(px-tx)*(newScale/scale);
-    ty=py-(py-ty)*(newScale/scale);
-    scale=newScale;
+    let nx=px-(px-tx)*(newScale/scale);
+    let ny=py-(py-ty)*(newScale/scale);
+    const c=clampTranslation(nx,ny,newScale);
+    tx=c.x; ty=c.y; scale=newScale;
     applyTransform();
   },{passive:false});
 })();
