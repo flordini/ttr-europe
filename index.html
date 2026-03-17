@@ -26,7 +26,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2c4a1e;font-family:
 .card-chip{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:600;white-space:nowrap}
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:7px 16px;border-radius:20px;font-size:12px;pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:100;white-space:nowrap}
 #toast.show{opacity:1}
-/* Touch long-press for opponent routes */
 .route-hit{touch-action:none}
 </style>
 </head>
@@ -34,7 +33,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#2c4a1e;font-family:
 <div id="app">
   <div id="toolbar">
     <span class="title">🚂 TTR: Europe</span>
-    <span id="info">Tap city = destination · Tap route = yours · Long-press route = opponent</span>
+    <span id="info">Tap city = destination · Tap route to cycle: yours → opponent → clear</span>
     <button id="reset-btn" onclick="resetAll()">Reset</button>
   </div>
   <div id="map-wrap">
@@ -181,6 +180,7 @@ const COLOR_STYLE={
 
 let state={destinations:new Set(),myRoutes:new Set(),oppRoutes:new Set()};
 const svg=document.getElementById('map');
+let lastTouch=0; // global — survives drawMap() rerenders
 
 function perp(a,b,offset){
   const dx=CITIES[b][0]-CITIES[a][0],dy=CITIES[b][1]-CITIES[a][1];
@@ -239,38 +239,30 @@ function drawMap(){
       svg.appendChild(tick);
     }
 
-    // Touch-friendly hit area with long-press support
-    const hit = ns('line');
-    hit.setAttribute('x1', ax); hit.setAttribute('y1', ay);
-    hit.setAttribute('x2', bx); hit.setAttribute('y2', by);
-    hit.setAttribute('stroke', 'transparent');
-    hit.setAttribute('stroke-width', '18');
-    hit.setAttribute('cursor', 'pointer');
+    const hit=ns('line');
+    hit.setAttribute('x1',ax);hit.setAttribute('y1',ay);
+    hit.setAttribute('x2',bx);hit.setAttribute('y2',by);
+    hit.setAttribute('stroke','transparent');hit.setAttribute('stroke-width','18');
+    hit.setAttribute('cursor','pointer');
     hit.classList.add('route-hit');
 
-   let pressStart = 0;
-
-    hit.addEventListener('touchstart', e => {
-      pressStart = Date.now();
-    }, {passive: true});
-
-    hit.addEventListener('touchend', e => {
+    hit.addEventListener('touchend',e=>{
       e.preventDefault();
-      const dur = Date.now() - pressStart;
-      if (dur < 500) cycleRoute(r.id);
-    });
-
-    hit.addEventListener('click', e => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (Date.now() - pressStart > 100) return; // was a touch, skip ghost click
+      lastTouch=Date.now();
       cycleRoute(r.id);
     });
 
-    hit.addEventListener('contextmenu', e => { e.preventDefault(); });
+    hit.addEventListener('click',e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      if(Date.now()-lastTouch<500)return; // kill ghost click from touch
+      cycleRoute(r.id);
+    });
 
-    svg.appendChild(hit);  // ← this line was missing
-  });                       // ← this closes ROUTES.forEach
+    hit.addEventListener('contextmenu',e=>{e.preventDefault();});
+
+    svg.appendChild(hit);
+  });
 
   // Shortest path highlight
   if(state.destinations.size>=2){
@@ -398,38 +390,29 @@ function updateStats(){
     }).join('');
 }
 
-function toggleDest(name){
-  if(state.destinations.has(name)){state.destinations.delete(name);showToast(`${name} removed`);}
-  else{state.destinations.add(name);showToast(`${name} → destination`);}
-  drawMap();
-}
-function toggleRoute(id,isOpp){
-  if(isOpp){
-    if(state.oppRoutes.has(id)){state.oppRoutes.delete(id);showToast('Route cleared');}
-    else{state.oppRoutes.add(id);state.myRoutes.delete(id);showToast('Opponent route marked');}
-  }else{
-    if(state.myRoutes.has(id)){state.myRoutes.delete(id);showToast('Route cleared');}
-    else{state.myRoutes.add(id);state.oppRoutes.delete(id);showToast('Your route marked');}
-  }
-  drawMap();
-}
-  function cycleRoute(id) {
-  if (state.myRoutes.has(id)) {
+function cycleRoute(id){
+  if(state.myRoutes.has(id)){
     state.myRoutes.delete(id);
     state.oppRoutes.add(id);
     showToast('Opponent route');
-  } else if (state.oppRoutes.has(id)) {
+  }else if(state.oppRoutes.has(id)){
     state.oppRoutes.delete(id);
     showToast('Route cleared');
-  } else {
+  }else{
     state.myRoutes.add(id);
     showToast('Your route');
   }
   drawMap();
 }
+
+function toggleDest(name){
+  if(state.destinations.has(name)){state.destinations.delete(name);showToast(`${name} removed`);}
+  else{state.destinations.add(name);showToast(`${name} → destination`);}
+  drawMap();
+}
+
 function resetAll(){state.destinations.clear();state.myRoutes.clear();state.oppRoutes.clear();drawMap();showToast('Board reset');}
 
-// Service worker registration
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
