@@ -17,8 +17,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#3a2a10;font-family:
 #toolbar .title{font-size:13px;font-weight:600;color:#e8d5a0;letter-spacing:0.03em;white-space:nowrap}
 #info{font-size:10px;color:rgba(232,213,160,0.65);flex:1;min-width:0}
 #reset-btn{padding:5px 10px;font-size:11px;color:#e8d5a0;background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.25);border-radius:6px;cursor:pointer;white-space:nowrap;flex-shrink:0}
-#map-wrap{flex:1;overflow:auto;background:#e8d9b0;position:relative;-webkit-overflow-scrolling:touch}
-#map-wrap svg{display:block;width:994px;height:613px;transform-origin:0 0;}
+#map-wrap{flex:1;overflow:hidden;background:#e8d9b0;position:relative;touch-action:none}
+#map-wrap svg{display:block;width:100%;height:100%;min-width:994px;min-height:613px;transform-origin:0 0;}
 #stats{display:flex;gap:6px;padding:6px 10px;background:#3a2a10;flex-shrink:0;flex-wrap:wrap;align-items:center}
 .stat-pill{background:rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;font-size:11px;border:0.5px solid rgba(255,255,255,0.15);color:rgba(232,213,160,0.7);display:flex;align-items:center;gap:5px}
 .stat-pill strong{font-size:14px;font-weight:500;color:#e8d5a0}
@@ -216,7 +216,6 @@ const COLOR_STYLE={
 let state={destinations:new Set(),myRoutes:new Set(),oppRoutes:new Set()};
 const svg=document.getElementById('map');
 let lastTouch=0;
-let touchMoved=false; // shared between pan handler and route tap handler
 
 function perp(a,b,offset){
   const dx=CITIES[b][0]-CITIES[a][0],dy=CITIES[b][1]-CITIES[a][1];
@@ -400,7 +399,6 @@ function drawMap(){
 
     hit.addEventListener('touchend',e=>{
       e.preventDefault();
-      if(touchMoved)return;
       lastTouch=Date.now();
       cycleRoute(r.id);
     });
@@ -418,7 +416,7 @@ function drawMap(){
     const isDest=state.destinations.has(name);
     const g=ns('g');
     g.setAttribute('cursor','pointer');
-    g.addEventListener('click',e=>{e.stopPropagation();if(touchMoved)return;toggleDest(name);});
+    g.addEventListener('click',e=>{e.stopPropagation();toggleDest(name);});
 
     const shadow=ns('circle');
     shadow.setAttribute('cx',x+1.5);shadow.setAttribute('cy',y+1.5);
@@ -569,60 +567,95 @@ try{
   }
 }catch(e){}
 
-// ── Pinch-zoom on map only (native scroll for panning) ──────
+// ── Pinch-zoom + pan on map only ─────────────────────────────
 (function(){
   const wrap=document.getElementById('map-wrap');
-  let scale=1;
+  let scale=1, tx=0, ty=0;
+  let lastDist=null, lastMid=null, panStart=null;
   const MIN=0.5, MAX=5;
-  let lastDist=null;
-  let didPinch=false;
 
   function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 
-  function setScale(newScale,originX,originY){
-    newScale=clamp(newScale,MIN,MAX);
-    const ratio=newScale/scale;
-    const sl=wrap.scrollLeft, st=wrap.scrollTop;
-    scale=newScale;
-    svg.style.transform=`scale(${scale})`;
-    wrap.scrollLeft=(sl+originX)*ratio-originX;
-    wrap.scrollTop=(st+originY)*ratio-originY;
+  function clampTranslation(nx,ny,ns){
+    const ww=wrap.clientWidth, wh=wrap.clientHeight;
+    const mapW=svg.clientWidth*ns, mapH=svg.clientHeight*ns;
+    // allow at most 80% of map to go off screen on any side
+    const margin=0.2;
+    const minX=-(mapW*(1-margin)), maxX=ww*( 1-margin);
+    const minY=-(mapH*(1-margin)), maxY=wh*(1-margin);
+    return{x:clamp(nx,minX,maxX), y:clamp(ny,minY,maxY)};
   }
 
+  function applyTransform(){
+    svg.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
+  }
   function dist(t){
-    const dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;
+    const dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY;
     return Math.sqrt(dx*dx+dy*dy);
+  }
+  function mid(t){
+    return{x:(t[0].clientX+t[1].clientX)/2, y:(t[0].clientY+t[1].clientY)/2};
+  }
+  function wrapOffset(){
+    const r=wrap.getBoundingClientRect();
+    return{x:r.left,y:r.top};
   }
 
   wrap.addEventListener('touchstart',e=>{
-    if(e.touches.length===2){lastDist=dist(e.touches);didPinch=false;}
+    if(e.touches.length===2){
+      lastDist=dist(e.touches);
+      lastMid=mid(e.touches);
+      panStart=null;
+    } else if(e.touches.length===1){
+      panStart={x:e.touches[0].clientX-tx, y:e.touches[0].clientY-ty};
+      lastDist=null;
+    }
   },{passive:true});
 
   wrap.addEventListener('touchmove',e=>{
-    if(e.touches.length===2&&lastDist){
+    if(e.touches.length===2){
       e.preventDefault();
       const d=dist(e.touches);
-      const wo=wrap.getBoundingClientRect();
-      const mx=((e.touches[0].clientX+e.touches[1].clientX)/2)-wo.left;
-      const my=((e.touches[0].clientY+e.touches[1].clientY)/2)-wo.top;
-      setScale(scale*(d/lastDist),mx,my);
-      lastDist=d;
-      didPinch=true;
+      const m=mid(e.touches);
+      const wo=wrapOffset();
+      if(lastDist&&lastMid){
+        const ratio=d/lastDist;
+        const newScale=clamp(scale*ratio,MIN,MAX);
+        const px=m.x-wo.x, py=m.y-wo.y;
+        let nx=px-(px-tx)*(newScale/scale);
+        let ny=py-(py-ty)*(newScale/scale);
+        const c=clampTranslation(nx,ny,newScale);
+        tx=c.x; ty=c.y; scale=newScale;
+      }
+      lastDist=d; lastMid=m;
+      applyTransform();
+    } else if(e.touches.length===1&&panStart){
+      e.preventDefault();
+      const nx=e.touches[0].clientX-panStart.x;
+      const ny=e.touches[0].clientY-panStart.y;
+      const c=clampTranslation(nx,ny,scale);
+      tx=c.x; ty=c.y;
+      applyTransform();
     }
   },{passive:false});
 
   wrap.addEventListener('touchend',e=>{
-    if(e.touches.length<2)lastDist=null;
-    if(didPinch&&e.touches.length===0){
-      didPinch=false;
-      wrap.addEventListener('click',ev=>{ev.stopPropagation();ev.preventDefault();},{capture:true,once:true});
-    }
+    if(e.touches.length<2){lastDist=null;lastMid=null;}
+    if(e.touches.length===0){panStart=null;}
   },{passive:true});
 
+  // Mouse wheel zoom (desktop)
   wrap.addEventListener('wheel',e=>{
     e.preventDefault();
-    const wo=wrap.getBoundingClientRect();
-    setScale(scale*(e.deltaY<0?1.1:0.9),e.clientX-wo.left,e.clientY-wo.top);
+    const wo=wrapOffset();
+    const px=e.clientX-wo.x, py=e.clientY-wo.y;
+    const ratio=e.deltaY<0?1.1:0.9;
+    const newScale=clamp(scale*ratio,MIN,MAX);
+    let nx=px-(px-tx)*(newScale/scale);
+    let ny=py-(py-ty)*(newScale/scale);
+    const c=clampTranslation(nx,ny,newScale);
+    tx=c.x; ty=c.y; scale=newScale;
+    applyTransform();
   },{passive:false});
 })();
 </script>
