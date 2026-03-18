@@ -1,4 +1,4 @@
-const CACHE = 'ttr-europe-v6';
+const CACHE = 'ttr-europe-v7';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
